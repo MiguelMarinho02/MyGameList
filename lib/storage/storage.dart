@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -33,5 +34,11 @@ class Storage {
     } catch (e) {
       print('Error downloading file: $e');
     }
+  }
+
+  Future<String> getUserImagePath(User? user) async {
+    final appDocDir = await getApplicationDocumentsDirectory();
+    String filePath = "${appDocDir.path}/images/${user?.photoURL}";
+    return filePath;
   }
 }

@@ -21,6 +21,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color.fromARGB(242, 13, 13, 14),
       appBar: AppBar(
         centerTitle: true,
         backgroundColor: Theme.of(context).colorScheme.primary,
@@ -33,7 +34,6 @@ class _MyHomePageState extends State<MyHomePage> {
       drawer: MyDrawer(
         user: widget.user,
       ),
-      backgroundColor: const Color.fromARGB(242, 13, 13, 14),
       body:<Widget>[
         MyHome(),
         MySearch(),
