@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mal_clone/components/button_login_register.dart';
+import 'package:mal_clone/components/circular_avatar.dart';
 import 'package:mal_clone/pages/auth/welcome.dart';
 import 'package:mal_clone/pages/user_pages/profile.dart';
 import 'package:mal_clone/storage/storage.dart';
@@ -41,54 +42,7 @@ class MyDrawer extends StatelessWidget {
                     const SizedBox(
                       width: 25,
                     ),
-                    Builder(
-                      builder: (context) {
-                        if (user?.photoURL == null) {
-                          return const CircleAvatar(
-                            radius: 25,
-                            backgroundImage:
-                                AssetImage("assets/images/default_pic.jpg"),
-                          );
-                        } else {
-                          return FutureBuilder(
-                            future: Storage().getUserImagePath(user),
-                            builder: (context, snapshot) {
-                              if (snapshot.connectionState ==
-                                  ConnectionState.done) {
-                                if (snapshot.hasData) {
-                                  final filePath = snapshot.data!;
-                                  final file = File(filePath);
-                                  if (file.existsSync()) {
-                                    return CircleAvatar(
-                                      radius: 25,
-                                      backgroundImage: FileImage(file),
-                                    );
-                                  } else {
-                                    return const CircleAvatar(
-                                      radius: 25,
-                                      backgroundImage: AssetImage(
-                                          "assets/images/default_pic.jpg"),
-                                    );
-                                  }
-                                } else {
-                                  return const CircleAvatar(
-                                    radius: 25,
-                                    backgroundImage: AssetImage(
-                                        "assets/images/default_pic.jpg"),
-                                  );
-                                }
-                              } else {
-                                //not done acessing the directory
-                                return const CircleAvatar(
-                                  radius: 25,
-                                  child: CircularProgressIndicator(),
-                                );
-                              }
-                            },
-                          );
-                        }
-                      },
-                    ),
+                    MyCircularAvatar(radius: 25, user: user),
                     const SizedBox(
                       width: 20,
                     ),
