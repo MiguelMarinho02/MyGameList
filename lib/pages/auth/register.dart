@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:mal_clone/components/button_login_register.dart';
 import 'package:mal_clone/components/text_forms_auth.dart';
 import 'package:mal_clone/pages/home_page.dart';
+import 'package:mal_clone/providers/user_provider.dart';
+import 'package:provider/provider.dart';
 
 class MyRegisterPage extends StatefulWidget {
   MyRegisterPage({super.key});
@@ -153,12 +155,12 @@ class _MyRegisterPageState extends State<MyRegisterPage> {
                 if (user != null) {
                   if (!context.mounted) return;
                   errorMessage = null;
+                  final userProvider = Provider.of<UserProvider>(context, listen: false);
+                  userProvider.setUser(user);
                   Navigator.pushAndRemoveUntil<dynamic>(
                       context,
                       MaterialPageRoute<dynamic>(
-                          builder: (context) => MyHomePage(
-                                user: user,
-                              )),
+                          builder: (context) =>const MyHomePage()),
                       (route) => false);
                 }
               },

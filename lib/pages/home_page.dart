@@ -5,11 +5,11 @@ import 'package:mal_clone/components/drawer.dart';
 import 'package:mal_clone/pages/main_pages/game_list.dart';
 import 'package:mal_clone/pages/main_pages/home.dart';
 import 'package:mal_clone/pages/main_pages/search.dart';
+import 'package:mal_clone/providers/user_provider.dart';
+import 'package:provider/provider.dart';
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({super.key, required this.user});
-
-  final User? user;
+  const MyHomePage({super.key});
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -20,6 +20,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final userProvider = Provider.of<UserProvider>(context);
+    final user = userProvider.user;
     return Scaffold(
       backgroundColor: const Color.fromARGB(242, 13, 13, 14),
       appBar: AppBar(
@@ -31,9 +33,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         iconTheme: const IconThemeData(color: Colors.white),
       ),
-      drawer: MyDrawer(
-        user: widget.user,
-      ),
+      drawer: MyDrawer(),
       body:<Widget>[
         MyHome(),
         MySearch(),

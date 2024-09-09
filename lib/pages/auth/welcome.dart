@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:mal_clone/components/app_text_title.dart';
 import 'package:mal_clone/pages/auth/login.dart';
 import 'package:mal_clone/pages/auth/register.dart';

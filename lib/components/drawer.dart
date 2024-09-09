@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -7,14 +5,12 @@ import 'package:mal_clone/components/button_login_register.dart';
 import 'package:mal_clone/components/circular_avatar.dart';
 import 'package:mal_clone/pages/auth/welcome.dart';
 import 'package:mal_clone/pages/user_pages/profile.dart';
-import 'package:mal_clone/storage/storage.dart';
+import 'package:mal_clone/providers/user_provider.dart';
+import 'package:provider/provider.dart';
 
 class MyDrawer extends StatelessWidget {
-  final User? user;
-
   const MyDrawer({
     super.key,
-    required this.user,
   });
 
   Future logOut() async {
@@ -23,6 +19,8 @@ class MyDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final userProvider = Provider.of<UserProvider>(context);
+    final user = userProvider.user;
     return Drawer(
       backgroundColor: const Color.fromARGB(255, 42, 42, 42),
       child: Column(
@@ -39,9 +37,7 @@ class MyDrawer extends StatelessWidget {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => MyProfile(
-                                user: user,
-                              )));
+                          builder: (context) => MyProfile()));
                 },
                 child: Row(
                   //avatar andd basic info

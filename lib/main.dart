@@ -2,11 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:mal_clone/firebase_options.dart';
 import 'package:mal_clone/pages/auth/auth_page.dart';
+import 'package:mal_clone/providers/user_provider.dart';
+import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  runApp(const MyApp());
+  runApp(ChangeNotifierProvider(
+    create: (context) => UserProvider(),
+    child: const MyApp())
+  );
 }
 
 class MyApp extends StatelessWidget {
