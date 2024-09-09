@@ -34,7 +34,15 @@ class MyDrawer extends StatelessWidget {
                 height: 40,
               ),
               GestureDetector(
-                onTap: () => Navigator.push(context,MaterialPageRoute(builder: (context) => MyProfile(user: user,))),
+                onTap: () {
+                  Navigator.pop(context); //closes drawer before going to user profile
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => MyProfile(
+                                user: user,
+                              )));
+                },
                 child: Row(
                   //avatar andd basic info
                   mainAxisAlignment: MainAxisAlignment.start,

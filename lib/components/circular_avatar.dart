@@ -4,24 +4,36 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mal_clone/storage/storage.dart';
 
-class MyCircularAvatar extends StatelessWidget {
-  const MyCircularAvatar({super.key, required this.radius, required this.user});
+class MyCircularAvatar extends StatefulWidget {
+  const MyCircularAvatar({super.key, required this.radius, required this.user, this.newImage});
 
   final double radius;
   final User? user;
+  final File? newImage;
 
+  @override
+  State<MyCircularAvatar> createState() => _MyCircularAvatarState();
+}
+
+class _MyCircularAvatarState extends State<MyCircularAvatar> {
   @override
   Widget build(BuildContext context) {
     return Builder(
       builder: (context) {
-        if (user?.photoURL == null) {
+        if(widget.newImage != null){
           return CircleAvatar(
-            radius: radius,
+            radius: widget.radius,
+            backgroundImage: FileImage(widget.newImage!),
+          );
+        }
+        else if (widget.user?.photoURL == null) {
+          return CircleAvatar(
+            radius: widget.radius,
             backgroundImage: const AssetImage("assets/images/default_pic.jpg"),
           );
         } else {
           return FutureBuilder(
-            future: Storage().getUserImagePath(user),
+            future: Storage().getUserImagePath(widget.user),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.done) {
                 if (snapshot.hasData) {
@@ -29,19 +41,19 @@ class MyCircularAvatar extends StatelessWidget {
                   final file = File(filePath);
                   if (file.existsSync()) {
                     return CircleAvatar(
-                      radius: radius,
+                      radius: widget.radius,
                       backgroundImage: FileImage(file),
                     );
                   } else {
                     return CircleAvatar(
-                      radius: radius,
+                      radius: widget.radius,
                       backgroundImage:
                           const AssetImage("assets/images/default_pic.jpg"),
                     );
                   }
                 } else {
                   return CircleAvatar(
-                    radius: radius,
+                    radius: widget.radius,
                     backgroundImage:
                         const AssetImage("assets/images/default_pic.jpg"),
                   );
@@ -49,7 +61,7 @@ class MyCircularAvatar extends StatelessWidget {
               } else {
                 //not done acessing the directory
                 return CircleAvatar(
-                  radius: radius,
+                  radius: widget.radius,
                   child: const CircularProgressIndicator(),
                 );
               }

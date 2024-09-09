@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 
 class Storage {
@@ -31,6 +32,7 @@ class Storage {
       final localFile = File(filePath);
 
       await ref.writeToFile(localFile);
+      await evictImageCache(filePath); //clear previously cached profile image
     } catch (e) {
       print('Error downloading file: $e');
     }
@@ -40,5 +42,10 @@ class Storage {
     final appDocDir = await getApplicationDocumentsDirectory();
     String filePath = "${appDocDir.path}/images/${user?.photoURL}";
     return filePath;
+  }
+
+  Future<void> evictImageCache(String path) async {
+    final fileImage = FileImage(File(path));
+    await fileImage.evict();
   }
 }

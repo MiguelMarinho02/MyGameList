@@ -5,11 +5,16 @@ import 'package:mal_clone/components/app_text_title.dart';
 import 'package:mal_clone/components/circular_avatar.dart';
 import 'package:mal_clone/pages/user_pages/edit_profile.dart';
 
-class MyProfile extends StatelessWidget {
+class MyProfile extends StatefulWidget {
   const MyProfile({super.key, required this.user});
 
   final User? user;
 
+  @override
+  State<MyProfile> createState() => _MyProfileState();
+}
+
+class _MyProfileState extends State<MyProfile> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,26 +34,28 @@ class MyProfile extends StatelessWidget {
             Row(
               children: [
                 const SizedBox(width: 20,),
-                MyCircularAvatar(radius: 60, user: user),
+                MyCircularAvatar(radius: 60, user: widget.user),
                 const SizedBox(width: 30,),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      user?.displayName ?? "null", 
+                      widget.user?.displayName ?? "null", 
                       style: GoogleFonts.archivoBlack(color: Colors.white, fontSize: 30),
                       textAlign: TextAlign.left,
                     ),
                     Row(
                       children: [
                         Text(
-                          user?.metadata.creationTime.toString().substring(0,10) ?? "null", 
+                          widget.user?.metadata.creationTime.toString().substring(0,10) ?? "null", 
                           style: GoogleFonts.archivoBlack(color: Colors.white, fontSize: 10),
                         ),
                         const SizedBox(width: 20,),
                         GestureDetector(
-                          onTap: () => Navigator.push(context,MaterialPageRoute(builder: (context) => ProfileEditor(user: user,))),
+                          onTap: () => Navigator.push(context,MaterialPageRoute(builder: (context) => ProfileEditor(user: widget.user,))).then((value) => setState(() {
+                            //updates info on current page after possible alterations
+                          }),),
                           child: Container(
                             padding: const EdgeInsets.all(10),
                             decoration: BoxDecoration(
