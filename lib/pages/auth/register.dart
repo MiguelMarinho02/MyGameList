@@ -5,6 +5,7 @@ import 'package:mal_clone/components/button_login_register.dart';
 import 'package:mal_clone/components/text_forms_auth.dart';
 import 'package:mal_clone/pages/home_page.dart';
 import 'package:mal_clone/providers/user_provider.dart';
+import 'package:mal_clone/storage/firestore.dart';
 import 'package:provider/provider.dart';
 
 class MyRegisterPage extends StatefulWidget {
@@ -53,10 +54,25 @@ class _MyRegisterPageState extends State<MyRegisterPage> {
       return;
     }
 
+    if (usernameController.text.length > 10) {
+      updateErrorMessage("Username must have 10 characters or less");
+      return;
+    }
+
     setState(() {
       isSigning = true;
     });
 
+    //check username uniqueness //true if is not unique
+    if (await FireStoreFunctions().checkUsernameUniqueness(usernameController.text.trim())) {
+      updateErrorMessage("Username is not unique");
+      setState(() {
+        isSigning = false;
+      });
+      return;
+    }
+
+    //store the user
     if (matchPassword()) {
       try {
         UserCredential userCredentials =
@@ -74,8 +90,10 @@ class _MyRegisterPageState extends State<MyRegisterPage> {
           user = FirebaseAuth.instance.currentUser;
 
           //adds nothing for now but creates document for specific user
-          Map<String, dynamic> data = {};
-          db.collection("users").doc(user?.uid).set(data);
+          Map<String, dynamic> data = {
+            "username": usernameController.text.trim(),
+          };
+          await db.collection("users").doc(user?.uid).set(data);
         }
         clearControllers();
       } on FirebaseAuthException catch (e) {
@@ -155,12 +173,13 @@ class _MyRegisterPageState extends State<MyRegisterPage> {
                 if (user != null) {
                   if (!context.mounted) return;
                   errorMessage = null;
-                  final userProvider = Provider.of<UserProvider>(context, listen: false);
+                  final userProvider =
+                      Provider.of<UserProvider>(context, listen: false);
                   userProvider.setUser(user);
                   Navigator.pushAndRemoveUntil<dynamic>(
                       context,
                       MaterialPageRoute<dynamic>(
-                          builder: (context) =>const MyHomePage()),
+                          builder: (context) => const MyHomePage()),
                       (route) => false);
                 }
               },
