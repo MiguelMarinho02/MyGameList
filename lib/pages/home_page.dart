@@ -37,7 +37,7 @@ class _MyHomePageState extends State<MyHomePage> {
       body:<Widget>[
         MyHome(),
         MySearch(),
-        MyList(),
+        MyList(userId: user?.uid ?? "null",),
       ][currentPageIndex],
       bottomNavigationBar: NavigationBarTheme(
         data: const NavigationBarThemeData(

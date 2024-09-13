@@ -64,7 +64,8 @@ class _MyRegisterPageState extends State<MyRegisterPage> {
     });
 
     //check username uniqueness //true if is not unique
-    if (await FireStoreFunctions().checkUsernameUniqueness(usernameController.text.trim())) {
+    if (await FireStoreFunctions()
+        .checkUsernameUniqueness(usernameController.text.trim())) {
       updateErrorMessage("Username is not unique");
       setState(() {
         isSigning = false;
@@ -93,7 +94,7 @@ class _MyRegisterPageState extends State<MyRegisterPage> {
           Map<String, dynamic> data = {
             "username": usernameController.text.trim(),
           };
-          await db.collection("users").doc(user?.uid).set(data);
+          await db.collection("users").doc(user?.uid).set(data);         
         }
         clearControllers();
       } on FirebaseAuthException catch (e) {

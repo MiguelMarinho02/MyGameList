@@ -7,7 +7,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mal_clone/components/app_text_title.dart';
-import 'package:mal_clone/components/button_login_register.dart';
 import 'package:mal_clone/components/circular_avatar.dart';
 import 'package:mal_clone/components/text_forms_auth.dart';
 import 'package:mal_clone/providers/user_provider.dart';
@@ -49,6 +48,11 @@ class _ProfileEditorState extends State<ProfileEditor> {
   }
 
   Future updateUsername() async {
+    if (userNameController.text.trim().length > 10) {
+      message = "Username must have 10 characters or less";
+      return;
+    }
+
     if (await FireStoreFunctions()
         .checkUsernameUniqueness(userNameController.text.trim())) {
       message = "Username is not Unique";

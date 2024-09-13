@@ -38,6 +38,15 @@ class Storage {
     }
   }
 
+  Future<String> downloadGameImage(String id) async {
+    try {
+      Reference ref = download.ref().child("/game_avatar/$id.jpg");
+      return await ref.getDownloadURL();
+    } catch (e) {
+      return "";
+    }
+  }
+
   Future<String> getUserImagePath(User? user) async {
     final appDocDir = await getApplicationDocumentsDirectory();
     String filePath = "${appDocDir.path}/images/${user?.photoURL}";
