@@ -23,6 +23,7 @@ class _MyHomePageState extends State<MyHomePage> {
     final userProvider = Provider.of<UserProvider>(context);
     final user = userProvider.user;
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: const Color.fromARGB(242, 13, 13, 14),
       appBar: AppBar(
         centerTitle: true,
@@ -33,7 +34,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         iconTheme: const IconThemeData(color: Colors.white),
       ),
-      drawer: MyDrawer(),
+      drawer: const MyDrawer(),
       body:<Widget>[
         MyHome(),
         MySearch(),
