@@ -173,7 +173,7 @@ class _MyListState extends State<MyList> {
                           },
                         ),
                       ),
-                      const SizedBox(width: 20),
+                      const SizedBox(width: 15),
                       // Game Info and Actions
                       Expanded(
                         child: Column(

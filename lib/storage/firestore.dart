@@ -45,6 +45,12 @@ class FireStoreFunctions {
     return doc;
   }
 
+  Future<QuerySnapshot> getGames() async {
+    final gamesRef = db.collection("games");
+    QuerySnapshot querySnapshot = await gamesRef.get();
+    return querySnapshot;
+  }
+
   Future<QuerySnapshot> getGamesWithLimit(int limit) async {
     final gamesRef = db.collection("games");
     QuerySnapshot querySnapshot = await gamesRef.limit(limit).get();
