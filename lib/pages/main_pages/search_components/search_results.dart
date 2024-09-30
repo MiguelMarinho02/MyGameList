@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:mal_clone/pages/main_pages/game_page.dart';
 import 'package:mal_clone/storage/storage.dart';
 
 class MySearchResults extends StatefulWidget {
@@ -23,6 +24,12 @@ class _MySearchResultsState extends State<MySearchResults> {
                     child: GestureDetector(
                       onTap: () {
                         //send user to game page
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  GamePage(uid: widget.results[index].id),
+                            ));
                       },
                       child: Container(
                         decoration: index != 0
@@ -63,7 +70,7 @@ class _MySearchResultsState extends State<MySearchResults> {
                             ),
                             //game info
                             Expanded(
-                              child: Column(
+                                child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
@@ -75,11 +82,13 @@ class _MySearchResultsState extends State<MySearchResults> {
                                       style: const TextStyle(
                                           color: Colors.white, fontSize: 25),
                                     ),
-                                    Builder( //platforms and release date
+                                    Builder(
+                                      //platforms and release date
                                       builder: (context) {
                                         String text =
                                             "${widget.results[index].get("launchDate")} (";
-                                        for (var platform in widget.results[index]
+                                        for (var platform in widget
+                                            .results[index]
                                             .get("platforms")) {
                                           text = "$text$platform, ";
                                         }
@@ -95,15 +104,20 @@ class _MySearchResultsState extends State<MySearchResults> {
                                   ],
                                 ),
                                 Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
                                     Row(
                                       children: [
                                         Text(
                                           "${widget.results[index].get("members")}",
-                                          style: const TextStyle(color: Colors.grey, fontSize: 15),
+                                          style: const TextStyle(
+                                              color: Colors.grey, fontSize: 15),
                                         ),
-                                        const Icon(Icons.person,color: Colors.grey,),
+                                        const Icon(
+                                          Icons.person,
+                                          color: Colors.grey,
+                                        ),
                                       ],
                                     ),
                                     GestureDetector(

@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:mal_clone/pages/main_pages/game_page.dart';
 import 'package:mal_clone/providers/user_provider.dart';
 import 'package:mal_clone/storage/firestore.dart';
 import 'package:mal_clone/storage/storage.dart';
@@ -142,6 +143,12 @@ class _MyListState extends State<MyList> {
               child: GestureDetector(
                 onTap: () {
                   // Handle navigation to the game page
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            GamePage(uid: lists[currentPageIndex][index].id),
+                      ));
                 },
                 child: Container(
                   decoration: const BoxDecoration(
@@ -157,7 +164,8 @@ class _MyListState extends State<MyList> {
                           builder: (context, snapshot) {
                             if (snapshot.connectionState ==
                                 ConnectionState.done) {
-                              if (snapshot.hasData && snapshot.data!.isNotEmpty) {
+                              if (snapshot.hasData &&
+                                  snapshot.data!.isNotEmpty) {
                                 return Image.network(snapshot.data ?? "");
                               } else {
                                 return const Center(
