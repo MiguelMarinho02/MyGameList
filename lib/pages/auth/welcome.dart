@@ -14,8 +14,11 @@ class MyWelcomePage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const FittedBox(
-              child: MyBarText(text: "Welcome to MyGameList", size: 40)
+            Container(
+              margin:const EdgeInsets.fromLTRB(20, 0, 20, 0),
+              child: const FittedBox(
+                child: MyBarText(text: "Welcome to MyGameList", size: 40)
+              ),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,

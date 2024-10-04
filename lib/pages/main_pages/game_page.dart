@@ -10,7 +10,8 @@ import 'package:mal_clone/providers/user_provider.dart';
 import 'package:mal_clone/storage/firestore.dart';
 import 'package:mal_clone/storage/storage.dart';
 import 'package:provider/provider.dart';
-import 'package:youtube_player_flutter/youtube_player_flutter.dart';
+import 'package:webview_flutter/webview_flutter.dart';
+import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 
 class GamePage extends StatefulWidget {
   const GamePage({super.key, required this.uid});
@@ -32,19 +33,32 @@ class _GamePageState extends State<GamePage> {
     getGameInfo();
   }
 
+  @override
+  void deactivate() {
+    _controller.pauseVideo();
+    super.deactivate();
+  }
+
+  @override
+  void dispose() {
+    _controller.close();
+    super.dispose();
+  }
+
   Future getGameInfo() async {
     gameData = await FireStoreFunctions().getGame(widget.uid);
     setState(() {
       isLoading = false;
-      _controller = YoutubePlayerController(
-          initialVideoId: YoutubePlayer.convertUrlToId(
+      _controller = YoutubePlayerController.fromVideoId(
+          videoId: YoutubePlayerController.convertUrlToId(
                   gameData.get(GameFields.trailerURL)) ??
               "",
-          flags: const YoutubePlayerFlags(
-            autoPlay: false,
-            mute: true,
-          )
-        );
+          autoPlay: false,
+          params: const YoutubePlayerParams(
+            mute: false,
+            showControls: true,
+            enableJavaScript: false,
+          ));
     });
   }
 
@@ -89,35 +103,36 @@ class _GamePageState extends State<GamePage> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         //image container
-                        Container(
-                          padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                              border: Border.all(
-                            color: Colors.white,
-                          )),
-                          child: FutureBuilder(
-                            future: Storage().downloadGameImage(gameData.id),
-                            builder: (context, snapshot) {
-                              if (snapshot.connectionState ==
-                                  ConnectionState.done) {
-                                if (snapshot.hasData &&
-                                    snapshot.data!.isNotEmpty) {
-                                  return Image.network(
-                                    snapshot.data ?? "",
-                                    fit: BoxFit.cover,
-                                    width: 270,
-                                    height: 340,
-                                  );
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.67, // Fixed width
+                          child: Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                                border: Border.all(
+                              color: Colors.white,
+                            )),
+                            child: FutureBuilder(
+                              future: Storage().downloadGameImage(gameData.id),
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.done) {
+                                  if (snapshot.hasData &&
+                                      snapshot.data!.isNotEmpty) {
+                                    return Image.network(
+                                      snapshot.data ?? "",
+                                      fit: BoxFit.fill,
+                                    );
+                                  } else {
+                                    return const Text(
+                                      "No Image Found",
+                                      style: TextStyle(color: Colors.white),
+                                    );
+                                  }
                                 } else {
-                                  return const Text(
-                                    "No Image Found",
-                                    style: TextStyle(color: Colors.white),
-                                  );
+                                  return const CircularProgressIndicator();
                                 }
-                              } else {
-                                return const CircularProgressIndicator();
-                              }
-                            },
+                              },
+                            ),
                           ),
                         ),
                         //info like members and score
@@ -159,7 +174,11 @@ class _GamePageState extends State<GamePage> {
                                 height: 20,
                               ),
                               //members
-                              MyFieldGamePage(fieldName: "Members", fieldContent: gameData.get("members").toString(), crossAxisAlignment: CrossAxisAlignment.end),  
+                              MyFieldGamePage(
+                                  fieldName: "Members",
+                                  fieldContent:
+                                      gameData.get("members").toString(),
+                                  crossAxisAlignment: CrossAxisAlignment.end),
                               //add more stuff eventually
                             ],
                           ),
@@ -172,6 +191,14 @@ class _GamePageState extends State<GamePage> {
                       textAlign: TextAlign.center,
                       style: GoogleFonts.fredoka(
                           color: Colors.white, fontSize: 25)),
+                  //platforms
+                  Container(
+                    margin: const EdgeInsets.fromLTRB(20, 5, 20, 0),
+                    child: Text(gameData.get(GameFields.platforms).toString(),
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.fredoka(
+                            color: Colors.grey, fontSize: 15)),
+                  ),
                   //tags
                   Container(
                       margin: const EdgeInsets.all(20),
@@ -211,12 +238,11 @@ class _GamePageState extends State<GamePage> {
 
                   //Youtube trailer
                   Container(
-                    margin: const EdgeInsets.all(20),
-                    height: 200,
-                    child: YoutubePlayer(
-                      controller: _controller,
-                    )
-                  ),
+                      margin: const EdgeInsets.all(20),
+                      child: YoutubePlayer(
+                        controller: _controller,
+                        aspectRatio: 16/9,
+                      )),
                   const Divider(),
 
                   //Details
@@ -229,18 +255,42 @@ class _GamePageState extends State<GamePage> {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            MyFieldGamePage(fieldName: "Studio", fieldContent: gameData.get(GameFields.studio), crossAxisAlignment: CrossAxisAlignment.start, fontSizeContent: 20,),
-                            const SizedBox(height: 10,),
-                            MyFieldGamePage(fieldName: "Launch Date", fieldContent: gameData.get(GameFields.launchDate), crossAxisAlignment: CrossAxisAlignment.start, fontSizeContent: 20,),
+                            MyFieldGamePage(
+                              fieldName: "Studio",
+                              fieldContent: gameData.get(GameFields.studio),
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              fontSizeContent: 20,
+                            ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            MyFieldGamePage(
+                              fieldName: "Launch Date",
+                              fieldContent: gameData.get(GameFields.launchDate),
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              fontSizeContent: 20,
+                            ),
                           ],
                         ),
                         //publisher, ageRating
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            MyFieldGamePage(fieldName: "Publisher", fieldContent: gameData.get(GameFields.publisher), crossAxisAlignment: CrossAxisAlignment.start, fontSizeContent: 20,),
-                            const SizedBox(height: 10,),
-                            MyFieldGamePage(fieldName: "Rating", fieldContent: gameData.get(GameFields.ageRating), crossAxisAlignment: CrossAxisAlignment.start, fontSizeContent: 20,),
+                            MyFieldGamePage(
+                              fieldName: "Publisher",
+                              fieldContent: gameData.get(GameFields.publisher),
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              fontSizeContent: 20,
+                            ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            MyFieldGamePage(
+                              fieldName: "Rating",
+                              fieldContent: gameData.get(GameFields.ageRating),
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              fontSizeContent: 20,
+                            ),
                           ],
                         ),
                       ],
@@ -248,9 +298,10 @@ class _GamePageState extends State<GamePage> {
                   ),
                   //add more?? maybe actors? or details regarding the review like number of people who have given a score
 
-                  
                   //last free space
-                  const SizedBox(height: 80,)
+                  const SizedBox(
+                    height: 80,
+                  )
                 ],
               ),
             );
