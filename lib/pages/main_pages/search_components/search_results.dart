@@ -1,7 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:mal_clone/pages/main_pages/add_edit_game_page.dart';
 import 'package:mal_clone/pages/main_pages/game_page.dart';
+import 'package:mal_clone/providers/user_provider.dart';
 import 'package:mal_clone/storage/storage.dart';
+import 'package:provider/provider.dart';
 
 class MySearchResults extends StatefulWidget {
   const MySearchResults({super.key, required this.results});
@@ -15,6 +18,9 @@ class MySearchResults extends StatefulWidget {
 class _MySearchResultsState extends State<MySearchResults> {
   @override
   Widget build(BuildContext context) {
+    final userProvider = Provider.of<UserProvider>(context);
+    final user = userProvider.user;
+
     return Expanded(
         child: widget.results.isNotEmpty
             ? ListView.builder(
@@ -122,8 +128,14 @@ class _MySearchResultsState extends State<MySearchResults> {
                                     ),
                                     GestureDetector(
                                       onTap: () {
-                                        // Handle edit action
-                                      },
+                                        //Handle edit button
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  AddEditGamePage(gameID: widget.results[index].id,userID: user!.uid,),
+                                            ));
+                                          },
                                       child: Container(
                                         padding: const EdgeInsets.all(3),
                                         color: Colors.grey,

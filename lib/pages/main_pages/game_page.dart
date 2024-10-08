@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:mal_clone/components/app_text_title.dart';
 import 'package:mal_clone/components/game_page_text_details.dart';
 import 'package:mal_clone/enumerations.dart';
+import 'package:mal_clone/pages/main_pages/add_edit_game_page.dart';
 import 'package:mal_clone/providers/user_provider.dart';
 import 'package:mal_clone/storage/firestore.dart';
 import 'package:mal_clone/storage/storage.dart';
@@ -104,7 +105,8 @@ class _GamePageState extends State<GamePage> {
                       children: [
                         //image container
                         SizedBox(
-                          width: MediaQuery.of(context).size.width * 0.67, // Fixed width
+                          width: MediaQuery.of(context).size.width *
+                              0.67, // Fixed width
                           child: Container(
                             padding: const EdgeInsets.all(10),
                             decoration: BoxDecoration(
@@ -241,7 +243,7 @@ class _GamePageState extends State<GamePage> {
                       margin: const EdgeInsets.all(20),
                       child: YoutubePlayer(
                         controller: _controller,
-                        aspectRatio: 16/9,
+                        aspectRatio: 16 / 9,
                       )),
                   const Divider(),
 
@@ -310,7 +312,14 @@ class _GamePageState extends State<GamePage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          //add logic for adding to personal list and editing said addition
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => AddEditGamePage(
+                  gameID: gameData.id,
+                  userID: user!.uid,
+                ),
+              ));
         },
         backgroundColor: Theme.of(context).primaryColor,
         child: const Icon(Icons.add),

@@ -18,6 +18,13 @@ class FireStoreFunctions {
     return querySnapshot;
   }
 
+  Future<DocumentSnapshot<Map<String, dynamic>>> getGameFromUserGameList(String uid, String gameid) async {
+    final usersRef = db.collection("users");
+    DocumentSnapshot<Map<String, dynamic>> querySnapshot =
+        await usersRef.doc(uid).collection("list").doc(gameid).get();
+    return querySnapshot;
+  }
+
   Future<QuerySnapshot> getCurrentUserHistory(String uid) async {
     final usersRef = db.collection("users");
     QuerySnapshot querySnapshot =
@@ -55,5 +62,21 @@ class FireStoreFunctions {
     final gamesRef = db.collection("games");
     QuerySnapshot querySnapshot = await gamesRef.limit(limit).get();
     return querySnapshot;
+  }
+
+  //these 3 need more logic to handle user count and score 
+  Future addGameToUserGameList(String uid, String gameid, Map<String, dynamic> data) async {
+    final usersRef = db.collection("users");
+    await usersRef.doc(uid).collection("list").doc(gameid).set(data);
+  }
+
+  Future updateGameToUserGameList(String uid, String gameid, Map<String, dynamic> data) async {
+    final usersRef = db.collection("users");
+    await usersRef.doc(uid).collection("list").doc(gameid).update(data);
+  }
+
+  Future deleteGameFromUserGameList(String uid, String gameid) async {
+    final usersRef = db.collection("users");
+    await usersRef.doc(uid).collection("list").doc(gameid).delete();
   }
 }

@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:mal_clone/enumerations.dart';
+import 'package:mal_clone/pages/main_pages/add_edit_game_page.dart';
 import 'package:mal_clone/pages/main_pages/game_page.dart';
 import 'package:mal_clone/providers/user_provider.dart';
 import 'package:mal_clone/storage/firestore.dart';
@@ -19,6 +21,7 @@ class _MyListState extends State<MyList> {
   int currentPageIndex = 0;
   bool isLoading = true;
   late List<QueryDocumentSnapshot> all = [];
+  late List<QueryDocumentSnapshot> playingList = [];
   late List<QueryDocumentSnapshot> completedList = [];
   late List<QueryDocumentSnapshot> toPlayList = [];
   late List<QueryDocumentSnapshot> droppedList = [];
@@ -33,6 +36,7 @@ class _MyListState extends State<MyList> {
 
   List<String> status = [
     "All",
+    "Playing",
     "Completed",
     "On Hold",
     "Dropped",
@@ -50,26 +54,48 @@ class _MyListState extends State<MyList> {
         await FireStoreFunctions().getCurrentUserGameList(widget.userId ?? "");
 
     for (var doc in querySnapshot.docs) {
-      if (doc.get("status") == "completed") {
+      if (doc.get("status") == GameListStatus.completed) {
         completedList.add(doc);
       }
-      if (doc.get("status") == "onHold") {
+      if (doc.get("status") == GameListStatus.onHold) {
         onHoldList.add(doc);
       }
-      if (doc.get("status") == "dropped") {
+      if (doc.get("status") == GameListStatus.dropped) {
         droppedList.add(doc);
       }
-      if (doc.get("status") == "toPlay") {
+      if (doc.get("status") == GameListStatus.toPlay) {
         toPlayList.add(doc);
+      }
+      if (doc.get("status") == GameListStatus.playing) {
+        playingList.add(doc);
       }
       all.add(doc);
     }
 
-    lists = [all, completedList, onHoldList, droppedList, toPlayList];
+    lists = [
+      all,
+      playingList,
+      completedList,
+      onHoldList,
+      droppedList,
+      toPlayList
+    ];
 
     setState(() {
       isLoading = false;
     });
+  }
+
+  void clearLists() {
+    all.clear();
+    playingList.clear();
+    completedList.clear();
+    onHoldList.clear();
+    droppedList.clear();
+    toPlayList.clear();
+    for (var l in lists) {
+      l.clear();
+    }
   }
 
   @override
@@ -226,8 +252,22 @@ class _MyListState extends State<MyList> {
                                 ),
                                 //edit button
                                 GestureDetector(
+                                  // Handle edit action
                                   onTap: () {
-                                    // Handle edit action
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => AddEditGamePage(
+                                            gameID: lists[currentPageIndex]
+                                                    [index]
+                                                .id,
+                                            userID: user!.uid,
+                                          ),
+                                        )).then((value) => setState(() {
+                                          clearLists();
+                                          isLoading = true;
+                                          getList();
+                                        }));
                                   },
                                   child: Container(
                                     padding: const EdgeInsets.all(3),
