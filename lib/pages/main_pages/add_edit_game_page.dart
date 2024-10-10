@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:mal_clone/components/date_selector.dart';
 import 'package:mal_clone/enumerations.dart';
 import 'package:mal_clone/storage/firestore.dart';
 
@@ -50,7 +51,10 @@ class _AddEditGamePageState extends State<AddEditGamePage> {
     "10"
   ];
 
-  //if both stay at -1, it means that both were not found in the user list
+  TextEditingController startDateController = TextEditingController();
+
+  TextEditingController finishedDateController = TextEditingController();
+
   int platformIndex = 0;
   int statusIndex = 0;
   int ratingIndex = 0;
@@ -98,8 +102,19 @@ class _AddEditGamePageState extends State<AddEditGamePage> {
         }
       }
 
+      //get rating
       if (userGameDetails.get(GameListFields.rating) != "-") {
         ratingIndex = int.parse(userGameDetails.get(GameListFields.rating)) + 1;
+      }
+
+      //getDates
+      if (userGameDetails.get(GameListFields.dateAdded) != "") {
+        startDateController.text =
+            userGameDetails.get(GameListFields.dateAdded);
+      }
+      if (userGameDetails.get(GameListFields.dateFinished) != "") {
+        finishedDateController.text =
+            userGameDetails.get(GameListFields.dateFinished);
       }
     }
 
@@ -114,26 +129,72 @@ class _AddEditGamePageState extends State<AddEditGamePage> {
         GameListFields.platform: platforms[platformIndex],
         GameListFields.rating: ratings[ratingIndex],
         GameListFields.status: status[statusIndex],
+        GameListFields.dateAdded: startDateController.text,
+        GameListFields.dateFinished: finishedDateController.text,
       };
-      await FireStoreFunctions()
-          .updateGameToUserGameList(widget.userID, widget.gameID, data);
-    }else{
+
+      //start date updates when added to playing list
+      if (status[statusIndex] == GameListStatus.playing &&
+          startDateController.text.isEmpty) {
+        data.update(
+            GameListFields.dateAdded,
+            (value) => "${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}");
+      }
+
+      //if status changes from playing to finished and current date is empty
+      if (status[statusIndex] == GameListStatus.completed &&
+          userGameDetails.get(GameListFields.status) ==
+              GameListStatus.playing &&
+          finishedDateController.text.isEmpty) {
+        data.update(
+            GameListFields.dateFinished,
+            (value) => "${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}");
+      }
+
+      await FireStoreFunctions().updateGameToUserGameList(
+          widget.userID, widget.gameID, data, userGameDetails.data()!);
+    } else {
       var data = {
-        GameListFields.name : gameData.get(GameFields.name),
-        GameListFields.dateAdded : "",
-        GameListFields.dateFinished : "",
-        GameListFields.launchDate : gameData.get(GameFields.launchDate),
+        GameListFields.name: gameData.get(GameFields.name),
+        GameListFields.dateAdded: startDateController.text,
+        GameListFields.dateFinished: finishedDateController.text,
+        GameListFields.launchDate: gameData.get(GameFields.launchDate),
         GameListFields.platform: platforms[platformIndex],
         GameListFields.rating: ratings[ratingIndex],
         GameListFields.status: status[statusIndex],
       };
 
-      if(status[statusIndex] == GameListStatus.playing){
-        data.update(GameListFields.dateAdded, (value) => DateTime(DateTime.now().day, DateTime.now().month, DateTime.now().year).toString());
+      //start date updates when added to playing list
+      if (status[statusIndex] == GameListStatus.playing &&
+          startDateController.text.isEmpty) {
+        data.update(
+            GameListFields.dateAdded,
+            (value) =>
+                "${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}");
       }
 
       await FireStoreFunctions()
           .addGameToUserGameList(widget.userID, widget.gameID, data);
+    }
+  }
+
+  Future datePicker(bool finished) async {
+    DateTime? picked = await showDatePicker(
+        context: context,
+        initialDate: DateTime.now(),
+        firstDate: DateTime(1950),
+        lastDate: DateTime(2100));
+
+    if (picked != null) {
+      setState(() {
+        if (finished) {
+          finishedDateController.text =
+              "${picked.day}/${picked.month}/${picked.year}";
+        } else {
+          startDateController.text =
+              "${picked.day}/${picked.month}/${picked.year}";
+        }
+      });
     }
   }
 
@@ -335,6 +396,38 @@ class _AddEditGamePageState extends State<AddEditGamePage> {
                                 ),
                               ),
                             ),
+
+                            const SizedBox(
+                              height: 15,
+                            ),
+
+                            const Text(
+                              "Dates",
+                              textAlign: TextAlign.left,
+                              style:
+                                  TextStyle(color: Colors.grey, fontSize: 15),
+                            ),
+
+                            const SizedBox(
+                              height: 10,
+                            ),
+
+                            //dates
+                            MyDateForm(
+                              controller: startDateController,
+                              datePicker: datePicker,
+                              text: "Start Date",
+                              finished: false,
+                            ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            MyDateForm(
+                              controller: finishedDateController,
+                              datePicker: datePicker,
+                              text: "Finished Date",
+                              finished: true,
+                            ),
                           ],
                         ),
                       ),
@@ -346,8 +439,8 @@ class _AddEditGamePageState extends State<AddEditGamePage> {
                         child: GestureDetector(
                           onTap: () async {
                             await FireStoreFunctions()
-                                .deleteGameFromUserGameList(
-                                    widget.userID, widget.gameID);
+                                .deleteGameFromUserGameList(widget.userID,
+                                    widget.gameID, userGameDetails.data()!);
                             if (!context.mounted) return;
                             Navigator.pop(context);
                           },

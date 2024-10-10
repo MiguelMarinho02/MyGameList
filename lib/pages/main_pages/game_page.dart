@@ -67,6 +67,10 @@ class _GamePageState extends State<GamePage> {
     var numOfRatings = gameData.get(GameFields.numOfRatings);
     var scoreTotal = gameData.get(GameFields.sumOfScores);
 
+    if (numOfRatings == 0) {
+      return "N/A";
+    }
+
     double score = scoreTotal / numOfRatings;
 
     return score.toString();
