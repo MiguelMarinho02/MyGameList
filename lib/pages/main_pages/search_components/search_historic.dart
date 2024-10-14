@@ -5,7 +5,13 @@ import 'package:mal_clone/storage/firestore.dart';
 import 'package:provider/provider.dart';
 
 class MySearchHistoric extends StatefulWidget {
-  const MySearchHistoric({super.key});
+  final TextEditingController textEditingController;
+  final Function performSearch;
+
+  const MySearchHistoric(
+      {super.key,
+      required this.textEditingController,
+      required this.performSearch});
 
   @override
   State<MySearchHistoric> createState() => _MySearchHistoricState();
@@ -47,10 +53,9 @@ class _MySearchHistoricState extends State<MySearchHistoric> {
               Padding(
                 padding: const EdgeInsets.only(right: 10),
                 child: GestureDetector(
-                  onTap: () async{
+                  onTap: () async {
                     await FireStoreFunctions().deleteSearchHistory(user!.uid);
-                    setState(() {
-                    });
+                    setState(() {});
                   },
                   child: const Icon(
                     Icons.delete,
@@ -69,13 +74,23 @@ class _MySearchHistoricState extends State<MySearchHistoric> {
                   return Expanded(
                     child: ListView.builder(
                       itemCount: snapshot.data!.length,
-                      itemBuilder: (context, index) => SizedBox(
-                        height: 30,
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 10),
-                          child: Text(
-                            snapshot.data![index],
-                            style: const TextStyle(color: Colors.white, fontSize: 20),
+                      itemBuilder: (context, index) => GestureDetector(
+                        onTap: () {
+                          print(snapshot.data![index]);
+                          widget.textEditingController.text =
+                              snapshot.data![index];
+                          widget.performSearch(user.uid,true);
+                          setState(() {});
+                        },
+                        child: SizedBox(
+                          height: 30,
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 10),
+                            child: Text(
+                              snapshot.data![index],
+                              style: const TextStyle(
+                                  color: Colors.white, fontSize: 20),
+                            ),
                           ),
                         ),
                       ),

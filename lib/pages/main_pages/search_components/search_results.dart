@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:mal_clone/pages/main_pages/add_edit_game_page.dart';
 import 'package:mal_clone/pages/main_pages/game_page.dart';
 import 'package:mal_clone/providers/user_provider.dart';
+import 'package:mal_clone/storage/firestore.dart';
 import 'package:mal_clone/storage/storage.dart';
 import 'package:provider/provider.dart';
 
@@ -92,7 +93,7 @@ class _MySearchResultsState extends State<MySearchResults> {
                                       //platforms and release date
                                       builder: (context) {
                                         String text =
-                                            "${widget.results[index].get("launchDate")} (";
+                                            "${FireStoreFunctions().convertTimeStampToDate(widget.results[index].get("launchDate") as Timestamp)} (";
                                         for (var platform in widget
                                             .results[index]
                                             .get("platforms")) {

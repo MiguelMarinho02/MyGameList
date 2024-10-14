@@ -272,7 +272,7 @@ class _GamePageState extends State<GamePage> {
                             ),
                             MyFieldGamePage(
                               fieldName: "Launch Date",
-                              fieldContent: gameData.get(GameFields.launchDate),
+                              fieldContent: FireStoreFunctions().convertTimeStampToDate(gameData.get(GameFields.launchDate)),
                               crossAxisAlignment: CrossAxisAlignment.start,
                               fontSizeContent: 20,
                             ),

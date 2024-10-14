@@ -11,6 +11,7 @@ class GameFields {
   static const String studio = "studio";
   static const String ageRating = "ageRating";
   static const String publisher = "publisher";
+  static const String score = "score";
   // Add other field names as needed
 }
 

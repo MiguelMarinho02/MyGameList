@@ -29,14 +29,20 @@ class FireStoreFunctions {
 
   Future<QuerySnapshot> getCurrentUserHistory(String uid) async {
     final usersRef = db.collection("users");
-    QuerySnapshot querySnapshot =
-        await usersRef.doc(uid).collection("search_history").get();
+    QuerySnapshot querySnapshot = await usersRef
+        .doc(uid)
+        .collection("search_history")
+        .orderBy("timestamp", descending: true)
+        .get();
     return querySnapshot;
   }
 
   Future addToSearchHistory(String item, String uid) async {
     final usersRef = db.collection("users");
-    await usersRef.doc(uid).collection("search_history").add({"data": item});
+    await usersRef.doc(uid).collection("search_history").add({
+      "data": item,
+      "timestamp": FieldValue.serverTimestamp(),
+    });
   }
 
   Future deleteSearchHistory(String uid) async {
@@ -65,6 +71,43 @@ class FireStoreFunctions {
   Future<QuerySnapshot> getGamesWithLimit(int limit) async {
     final gamesRef = db.collection("games");
     QuerySnapshot querySnapshot = await gamesRef.limit(limit).get();
+    return querySnapshot;
+  }
+
+  Future<QuerySnapshot> getGamesWithLimitByTimeStamp(
+      int limit, bool descending) async {
+    final gamesRef = db.collection("games");
+    QuerySnapshot querySnapshot = await gamesRef
+        .orderBy("timestamp", descending: descending)
+        .limit(limit)
+        .get();
+    return querySnapshot;
+  }
+
+  Future<QuerySnapshot> getGamesWithLimitByScore(
+      int limit, bool descending) async {
+    final gamesRef = db.collection("games");
+    QuerySnapshot querySnapshot = await gamesRef
+        .orderBy("score", descending: descending)
+        .limit(limit)
+        .get();
+    return querySnapshot;
+  }
+
+  Future<QuerySnapshot> getGamesWithLimitByScoreFromYear(
+      int limit, bool descending) async {
+    final gamesRef = db.collection("games");
+    DateTime now = DateTime.now();
+    DateTime startOfYear = DateTime(now.year, 1, 1);
+    DateTime endOfYear = DateTime(now.year, 12, 31);
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+      .collection('games')
+      .where('launchDate', isGreaterThanOrEqualTo: Timestamp.fromDate(startOfYear))  
+      .where('launchDate', isLessThanOrEqualTo: Timestamp.fromDate(endOfYear)) 
+      .orderBy('score', descending: true)       
+      .limit(limit)
+      .get();
+
     return querySnapshot;
   }
 
@@ -100,7 +143,8 @@ class FireStoreFunctions {
 
     await gamesRef.doc(gameid).update({
       GameFields.numOfRatings: numOfScores,
-      GameFields.sumOfScores: sumOfScores
+      GameFields.sumOfScores: sumOfScores,
+      GameFields.score: sumOfScores / numOfScores,
     });
   }
 
@@ -110,7 +154,10 @@ class FireStoreFunctions {
 
     await gamesRef.doc(gameid).update({
       GameFields.sumOfScores:
-          game.get(GameFields.sumOfScores) + (score - oldScore)
+          game.get(GameFields.sumOfScores) + (score - oldScore),
+      GameFields.score:
+          (game.get(GameFields.sumOfScores) + (score - oldScore)) /
+              game.get(GameFields.numOfRatings)
     });
   }
 
@@ -165,5 +212,9 @@ class FireStoreFunctions {
     }
     await addRemoveGameMembers(gameid, true);
     await usersRef.doc(uid).collection("list").doc(gameid).delete();
+  }
+
+  String convertTimeStampToDate(Timestamp timeStamp) {
+    return "${timeStamp.toDate().day}/${timeStamp.toDate().month}/${timeStamp.toDate().year}";
   }
 }

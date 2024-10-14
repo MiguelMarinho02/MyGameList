@@ -15,10 +15,10 @@ class MySearch extends StatefulWidget {
 }
 
 class _MySearchState extends State<MySearch> {
-  int selectedState = 0;
+  int selectedState =
+      0; //0 for suggestions page, 1 for historic page, 2 for results
   List<QueryDocumentSnapshot> results = [];
 
-  ///0 for suggestions page, 1 for historic page, 2 for results
   TextEditingController searchBar = TextEditingController();
 
   Future getSearchResults() async {
@@ -35,6 +35,20 @@ class _MySearchState extends State<MySearch> {
         results.add(doc);
       }
     }
+  }
+
+  void performSearch(String uid, bool repeatedSearch) async {
+    results = [];
+
+    if(!repeatedSearch){
+      await FireStoreFunctions().addToSearchHistory(searchBar.text.trim(), uid);
+    }
+
+    //logic to handle search
+    await getSearchResults();
+    setState(() {
+      selectedState = 2; //change screen to show results
+    });
   }
 
   @override
@@ -68,33 +82,27 @@ class _MySearchState extends State<MySearch> {
                 },
                 onEditingComplete: () async {
                   if (searchBar.text.length <= 3) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Container(
-                          margin: const EdgeInsets.all(16),
-                          padding: const EdgeInsets.all(8),
-                          height: 40,
-                          decoration: const BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(20)),
-                            color: Colors.red,
-                          ),
-                          child: const Text("Text must have more than 3 chars", style: TextStyle(color: Colors.white, fontSize: 15),textAlign: TextAlign.center,),
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      content: Container(
+                        margin: const EdgeInsets.all(16),
+                        padding: const EdgeInsets.all(8),
+                        height: 40,
+                        decoration: const BoxDecoration(
+                          borderRadius: BorderRadius.all(Radius.circular(20)),
+                          color: Colors.red,
                         ),
-                        backgroundColor: Colors.transparent,
-                        elevation: 0,
-                      )
-                    );
+                        child: const Text(
+                          "Text must have more than 3 chars",
+                          style: TextStyle(color: Colors.white, fontSize: 15),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      backgroundColor: Colors.transparent,
+                      elevation: 0,
+                    ));
                     return;
                   }
-                  results = [];
-                  FireStoreFunctions()
-                      .addToSearchHistory(searchBar.text.trim(), user!.uid);
-
-                  //logic to handle search
-                  await getSearchResults();
-                  setState(() {
-                    selectedState = 2; //change screen to show results
-                  });
+                  performSearch(user!.uid, false);
                 },
               ),
             ),
@@ -103,7 +111,10 @@ class _MySearchState extends State<MySearch> {
         Container(
           child: <Widget>[
             const MySearchSuggestions(),
-            const MySearchHistoric(),
+            MySearchHistoric(
+              textEditingController: searchBar,
+              performSearch: performSearch,
+            ),
             MySearchResults(
               results: results,
             )
