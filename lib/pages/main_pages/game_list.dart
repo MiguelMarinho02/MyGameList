@@ -221,14 +221,17 @@ class _MyListState extends State<MyList> {
                             ),
                             // Launch Date
                             Text(
-                              lists[currentPageIndex][index].get("launchDate"),
+                              FireStoreFunctions().convertTimeStampToDate(
+                                  lists[currentPageIndex][index]
+                                      .get("launchDate")),
                               style: const TextStyle(
                                   color: Colors.grey, fontSize: 15),
                             ),
                             const SizedBox(height: 26),
                             // Rating and Edit Button
                             Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              mainAxisAlignment:
+                                  MainAxisAlignment.spaceBetween,
                               children: [
                                 // Rating and Star
                                 Row(
@@ -257,7 +260,8 @@ class _MyListState extends State<MyList> {
                                     Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                          builder: (context) => AddEditGamePage(
+                                          builder: (context) =>
+                                              AddEditGamePage(
                                             gameID: lists[currentPageIndex]
                                                     [index]
                                                 .id,
