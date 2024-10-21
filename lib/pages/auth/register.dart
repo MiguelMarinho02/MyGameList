@@ -90,9 +90,9 @@ class _MyRegisterPageState extends State<MyRegisterPage> {
           await user!.reload();
           user = FirebaseAuth.instance.currentUser;
 
-          //adds nothing for now but creates document for specific user
           Map<String, dynamic> data = {
             "username": usernameController.text.trim(),
+            "creationStamp": FieldValue.serverTimestamp(),
           };
           await db.collection("users").doc(user?.uid).set(data);         
         }

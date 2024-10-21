@@ -23,6 +23,7 @@ class GameListFields {
   static const String rating = "rating";
   static const String platform = "platform";
   static const String status = "status";
+  static const String dateAddedToList = "dateAddedToList";
   // Add other field names as needed
 }
 

@@ -101,12 +101,25 @@ class FireStoreFunctions {
     DateTime startOfYear = DateTime(now.year, 1, 1);
     DateTime endOfYear = DateTime(now.year, 12, 31);
     QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-      .collection('games')
-      .where('launchDate', isGreaterThanOrEqualTo: Timestamp.fromDate(startOfYear))  
-      .where('launchDate', isLessThanOrEqualTo: Timestamp.fromDate(endOfYear)) 
-      .orderBy('score', descending: true)       
-      .limit(limit)
-      .get();
+        .collection('games')
+        .where('launchDate',
+            isGreaterThanOrEqualTo: Timestamp.fromDate(startOfYear))
+        .where('launchDate', isLessThanOrEqualTo: Timestamp.fromDate(endOfYear))
+        .orderBy('score', descending: true)
+        .limit(limit)
+        .get();
+
+    return querySnapshot;
+  }
+
+  Future<QuerySnapshot> getGamesDiscussionsWithDate(
+      String gameId, Timestamp timestamp) async {
+    final gamesRef = db.collection("games");
+    QuerySnapshot querySnapshot = await gamesRef
+        .doc(gameId)
+        .collection("discussions")
+        .where('creationDate', isGreaterThanOrEqualTo: timestamp)
+        .get();
 
     return querySnapshot;
   }
@@ -216,5 +229,12 @@ class FireStoreFunctions {
 
   String convertTimeStampToDate(Timestamp timeStamp) {
     return "${timeStamp.toDate().day}/${timeStamp.toDate().month}/${timeStamp.toDate().year}";
+  }
+
+  Timestamp convertStringToTimeStamp(String date) {
+    List<String> elements = date.split('/');
+    DateTime dateTime = DateTime(
+        int.parse(elements[2]), int.parse(elements[1]), int.parse(elements[0]));
+    return Timestamp.fromDate(dateTime);
   }
 }

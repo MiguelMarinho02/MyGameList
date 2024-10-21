@@ -35,42 +35,48 @@ class _MyHomePageState extends State<MyHomePage> {
         iconTheme: const IconThemeData(color: Colors.white),
       ),
       drawer: const MyDrawer(),
-      body:<Widget>[
-        MyHome(),
-        MySearch(),
-        MyList(userId: user?.uid ?? "null",),
+      body: <Widget>[
+        MyHome(userId: user?.uid ?? "null"),
+        const MySearch(),
+        MyList(
+          userId: user?.uid ?? "null",
+        ),
       ][currentPageIndex],
       bottomNavigationBar: NavigationBarTheme(
         data: const NavigationBarThemeData(
-          labelTextStyle: WidgetStatePropertyAll(
-            TextStyle(color: Colors.white)
-          )
-        ),
+            labelTextStyle:
+                WidgetStatePropertyAll(TextStyle(color: Colors.white))),
         child: NavigationBar(
-          backgroundColor: const Color.fromARGB(255, 42, 42, 42),
-          onDestinationSelected: (int index) {
-            setState(() {
-              currentPageIndex = index;
-            });
-          },
-          indicatorColor: Theme.of(context).colorScheme.primary,
-          selectedIndex: currentPageIndex,
-          destinations: const<Widget>[
-            NavigationDestination(
-              icon: Icon(Icons.home, color: Colors.white,),
-              label: 'Home',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.search, color: Colors.white,),
-              label: 'Search'
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.list_rounded, color: Colors.white,),
-              label: 'My List'
-            ),
-          ]
-        ),  
-      ), 
+            backgroundColor: const Color.fromARGB(255, 42, 42, 42),
+            onDestinationSelected: (int index) {
+              setState(() {
+                currentPageIndex = index;
+              });
+            },
+            indicatorColor: Theme.of(context).colorScheme.primary,
+            selectedIndex: currentPageIndex,
+            destinations: const <Widget>[
+              NavigationDestination(
+                icon: Icon(
+                  Icons.home,
+                  color: Colors.white,
+                ),
+                label: 'Home',
+              ),
+              NavigationDestination(
+                  icon: Icon(
+                    Icons.search,
+                    color: Colors.white,
+                  ),
+                  label: 'Search'),
+              NavigationDestination(
+                  icon: Icon(
+                    Icons.list_rounded,
+                    color: Colors.white,
+                  ),
+                  label: 'My List'),
+            ]),
+      ),
     );
   }
 }
