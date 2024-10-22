@@ -1,16 +1,39 @@
-# mal_clone
+# **MyGameList**📱
 
-A new Flutter project.
+## **Introduction**
 
-## Getting Started
+**MyGameList** is a side project I started with the objecive of learning flutter and firebase.  
+The idea to do this project was born out of a realization that there are multiple Anime/TV shows applications that allow one to rate, review and keep track of Movies and TV shows, but there are very few for video games. This app, takes a lot of inspiration from the MAL(My Anime List) mobile application in it's UI design, and it allows it's users to do the same things IMDb and MAL do, but instead of using it for Movies/Shows, you use it for video games.
 
-This project is a starting point for a Flutter application.
+## **Features**
 
-A few resources to get you started if this is your first Flutter project:
+- 🔍 **Search Functionality**: Easily find what you're looking for with our robust search feature.
+- 📝 **User Game Lists**: Users can create, manage, and view their game lists.
+- 🕹 **Recently Added Games**: View the latest games added to the database, sorted by release date.
+- 🏆 **Best Scored Games**: Check out the highest-scoring games of the year.
+- ⚙️ **Firebase Integration**: All data is synced with Firebase for real-time updates.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+## **Technologies Used**
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- **Flutter**: The app is built with the Flutter framework, making it cross-platform compatible.
+- **Dart**: All logic is written in Dart.
+- **Firebase Firestore**: For real-time database functionality.
+- **Firebase Authentication**: To handle user authentication.
+- **Firebase Storage**: Used to store and retrieve game images.
+- **Provider**: For state management.
+
+## **Screenshots**
+
+Here are some visual insights into the app:
+
+| Home Page                          | Game List                          |
+|-------------------------------------|------------------------------------|
+| ![Home Page](./screenshots/homePage.jpg "HomePage") | ![Game List](./screenshots/gameList.jpg "GameList") |
+
+| Game Page                          | Search                             |
+|-------------------------------------|------------------------------------|
+| ![Game Page](./screenshots/gamePage.jpg "GamePage") | ![Search](./screenshots/search.jpg "Search") |
+
+| Search Results                     |
+|-------------------------------------|
+| ![Search Results](./screenshots/searchResults.jpg "Search Results") |
