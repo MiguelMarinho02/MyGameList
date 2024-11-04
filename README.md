@@ -2,7 +2,7 @@
 
 ## **Introduction**
 
-**MyGameList** is a side project I started with the objecive of learning flutter and firebase.  
+**MyGameList** is a side project I started with the objective of learning flutter and firebase.  
 The idea to do this project was born out of a realization that there are multiple Anime/TV shows applications that allow one to rate, review and keep track of Movies and TV shows, but there are very few for video games. This app, takes a lot of inspiration from the MAL(My Anime List) mobile application in it's UI design, and it allows it's users to do the same things IMDb and MAL do, but instead of using it for Movies/Shows, you use it for video games.
 
 ## **Features**
